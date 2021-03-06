@@ -1,5 +1,8 @@
 package challenges2020
 
+const val START = 0
+const val END = 1
+
 fun main(args: Array<String>) {
 
     val nTests = readLine()!!.toInt()
@@ -16,51 +19,40 @@ fun main(args: Array<String>) {
     }
 }
 
-fun calculateSchedules(intervals: Array<Array<Int>>): String {
-    var schedule = ""
+fun calculateSchedules(times: Array<Array<Int>>): String {
+
     val c = mutableListOf<Array<Int>>()
     val j = mutableListOf<Array<Int>>()
-    intervals.forEach { curr ->
-        var addedC = false
-        if(c.isEmpty()) {
-            c.add(curr)
-            schedule += "C"
-            addedC = true
-        } else {
-            var hasConflict = false
-            c.forEach {
-                if((curr[0] > it[0] && curr[0] < it[1]) ||
-                    (curr[1] > it[0] && curr[1] < it[1]) ) {
-                    hasConflict = true
-                }
-            }
-            if(!hasConflict) {
-                c.add(curr)
-                schedule += "C"
-                addedC = true
-            }
-        }
 
-        if(!addedC) {
-            if(j.isEmpty()) {
+    val intervals = times.copyOf()
+    intervals.sortBy { it[0] }
+    intervals.forEach { curr ->
+        when {
+            canBeAssigned(curr, c) -> {
+                c.add(curr)
+            }
+            canBeAssigned(curr, j) -> {
                 j.add(curr)
-                schedule += "J"
-            } else {
-                var hasConflict = false
-                j.forEach {
-                    if((curr[0] > it[0] && curr[0] < it[1]) ||
-                        (curr[1] > it[0] && curr[1] < it[1]) ) {
-                        hasConflict = true
-                    }
-                }
-                if(!hasConflict) {
-                    j.add(curr)
-                    schedule += "J"
-                } else {
-                    return "IMPOSSIBLE"
-                }
+            }
+            else -> {
+                return "IMPOSSIBLE"
             }
         }
     }
+
+    var schedule = ""
+    times.forEach {
+        schedule += if(c.contains(it)) "C" else "J"
+    }
     return schedule
+}
+
+fun canBeAssigned(activity: Array<Int>, previousAssignedList: List<Array<Int>>): Boolean {
+    previousAssignedList.forEach { prev ->
+        if( (activity[START] >= prev[START] && activity[START] < prev[END]) ||
+            (activity[END] > prev[START] && activity[END] <= prev[END]) ) {
+            return false
+        }
+    }
+    return true
 }
