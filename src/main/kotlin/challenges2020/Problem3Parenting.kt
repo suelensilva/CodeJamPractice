@@ -28,15 +28,9 @@ fun calculateSchedules(times: Array<Array<Int>>): String {
     intervals.sortBy { it[0] }
     intervals.forEach { curr ->
         when {
-            canBeAssigned(curr, c) -> {
-                c.add(curr)
-            }
-            canBeAssigned(curr, j) -> {
-                j.add(curr)
-            }
-            else -> {
-                return "IMPOSSIBLE"
-            }
+            canBeAssigned(curr, c) -> c.add(curr)
+            canBeAssigned(curr, j) -> j.add(curr)
+            else -> return "IMPOSSIBLE"
         }
     }
 
