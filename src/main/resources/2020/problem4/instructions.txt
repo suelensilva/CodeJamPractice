@@ -1,0 +1,5 @@
+Compilar
+> kotlinc src/main/kotlin/challenges2020/Problem4EsabAtad.kt -include-runtime -d Problem4EsabAtad.jar
+
+Rodar
+> python3 src/main/resources/2020/problem4/interactive_runner.py python3 src/main/resources/2020/problem4/local_testing_tool.py 1 -- java Problem4EsabAtad.jar
