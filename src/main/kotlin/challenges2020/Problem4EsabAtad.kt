@@ -1,138 +1,142 @@
 package challenges2020
 
+import java.util.*
+
+val scanner = Scanner(System.`in`)
+var normal = IntArray(1)
+var nBits = 0
+var query = 0
+
 fun main(args: Array<String>) {
 
     val firstInput = readLine()!!.split(" ").map{ it.toInt() }
 
     val nTests = firstInput[0]
-    val nBits = firstInput[1]
+    nBits = firstInput[1]
 
-    val normal = IntArray(nBits) { -1 }
+    normal = IntArray(nBits) { -1 }
 
-    var idxEqual1 = -1
-    var idxOpposite1 = -1
+    var idEqual = 0
+    var idOpposite = 0
 
     for(t in 1 .. nTests) {
-
         var i = 1
-        var query = 0
         val firstHalfIndex = nBits / 2
 
         while (i <= firstHalfIndex) {
             val ask1 = i
             val ask2 = nBits+1-i
 
-            println(ask1)
-            query++
-            val nextBit = readLine()!!.toInt()
-            normal[ask1-1] = nextBit
+            val pair1 = askNumber(ask1)
+            normal[ask1-1] = pair1
 
-            println(ask2)
-            query++
-            val oppositeBit = readLine()!!.toInt()
-            normal[ask2-1] = oppositeBit
+            hasRandomFluctuation(idEqual, idOpposite)
 
-            if(idxEqual1 == -1 && nextBit == oppositeBit) {
-                idxEqual1 = ask1
+            val pair2 = askNumber(ask2)
+            normal[ask2-1] = pair2
+
+            if(idEqual == 0 && pair1 == pair2) {
+                idEqual = ask1
             }
 
-            if(idxOpposite1 == -1 && nextBit != oppositeBit) {
-                idxOpposite1 = ask1
+            if(idOpposite == 0 && pair1 != pair2) {
+                idOpposite = ask1
             }
 
-            if(query + 1 % 10 == 1) {
-
-                if(idxEqual1 >= 0 && idxOpposite1 >= 0) {
-                    println(idxOpposite1)
-                    query++
-
-                    val oppositeBit = readLine()!!.toInt()
-                    val previousValue = normal[idxOpposite1 - 1]
-
-                    if (oppositeBit != previousValue) {
-                        // aconteceu complemento ou reversal
-
-                        println(idxEqual1)
-                        query++
-
-                        val equalBit = readLine()!!.toInt()
-                        val previousEqualValue = normal[idxEqual1 - 1]
-
-                        if(equalBit != previousEqualValue) {
-                            // aconteceu complemento e reverse
-                            normal.reverse()
-                            normal.map { v ->
-                                if(v > -1) {
-                                    if(v == 1) 0 else 1
-                                } else {
-                                    v
-                                }
-                            }
-                        } else {
-                            // aconteceu soh reverse
-                            normal.reverse()
-                        }
-                    } else {
-                        println(idxEqual1)
-                        query++
-
-                        val equalBit = readLine()!!.toInt()
-                        val previousEqualValue = normal[idxEqual1 - 1]
-
-                        if(equalBit != previousEqualValue) {
-                            // aconteceu complemento
-                            normal.map { v ->
-                                if(v > -1) {
-                                    if(v == 1) 0 else 1
-                                } else {
-                                    v
-                                }
-                            }
-                        } // else nada aconteceu
-                    }
-                } else if (idxEqual1 >= 0) {
-
-                    println(idxEqual1)
-                    query++
-
-                    val equalBit = readLine()!!.toInt()
-                    val previousEqualValue = normal[idxEqual1 - 1]
-
-                    if(equalBit != previousEqualValue) {
-                        // aconteceu complemento
-                        normal.map { v ->
-                            if(v > -1) {
-                                if(v == 1) 0 else 1
-                            } else {
-                                v
-                            }
-                        }
-                    } // else nada aconteceu
-
-                } else if (idxOpposite1 >= 0) {
-
-                    val oppositeBit = readLine()!!.toInt()
-                    val previousValue = normal[idxOpposite1 - 1]
-
-                    if (oppositeBit != previousValue) {
-                        normal.reverse()
-                    }
-                }
-            }
+            hasRandomFluctuation(idEqual, idOpposite)
 
             i++
         }
 
         normal.forEach { print(it) }
         println()
+        System.out.flush()
 
-        val response = readLine()!!
+        val response = scanner.next()
 
         if (response == "N") break
         else {
-            normal.map { -1 }
-            idxEqual1 = -1
-            idxOpposite1 = -1
+            query = 0
+            for(n in 0 until nBits) {
+                normal[n] = -1
+            }
+            idEqual = 0
+            idOpposite = 0
         }
     }
+}
+
+private fun hasRandomFluctuation(
+    idEqual: Int,
+    idOpposite: Int
+) {
+    if (query % 10 == 0) {
+
+        if (idEqual > 0 && idOpposite > 0) {
+
+            val currOppositeValue = askNumber(idOpposite)
+            val previousOppositeValue = normal[idOpposite - 1]
+
+            val currEqualValue = askNumber(idEqual)
+            val previousEqualValue = normal[idEqual - 1]
+
+            if (currOppositeValue != previousOppositeValue) {
+                if (currEqualValue != previousEqualValue) {
+                    System.err.println("bit flip")
+                    complement()
+                } else {
+                    System.err.println("reverse")
+                    reverse()
+                }
+            } else {
+                if (currEqualValue != previousEqualValue) {
+                    System.err.println("reverse")
+                    System.err.println("bit flip")
+                    reverse()
+                    complement()
+                }
+            }
+        } else if (idEqual > 0) {
+
+            val currEqualValue = askNumber(idEqual)
+            val previousEqualValue = normal[idEqual - 1]
+
+            askNumber(idEqual)
+
+            if (currEqualValue != previousEqualValue) {
+                System.err.println("bit flip")
+                complement()
+            }
+
+        } else if (idOpposite > 0) {
+
+            val currOppositeValue = askNumber(idOpposite)
+            val previousOppositeValue = normal[idOpposite - 1]
+
+            askNumber(idOpposite)
+
+            if (currOppositeValue != previousOppositeValue) {
+                System.err.println("bit flip")
+                complement()
+            }
+        }
+    }
+}
+
+private fun askNumber(id: Int): Int {
+    println(id)
+    System.out.flush()
+    query++
+
+    return scanner.nextInt()
+}
+
+private fun complement() {
+    normal.forEachIndexed { index, v ->
+        normal[index] = if (v == 1) 0 else 1
+    }
+}
+
+private fun reverse() {
+    normal.reverse()
 }
