@@ -1,42 +1,47 @@
 package challenges2019
 
+import java.math.BigInteger
+
 fun main(args: Array<String>) {
     val t = readInt()
     for(i in 1..t) {
-        val (n, l) = readInts()
+        val (n, l) = readBigIntegers()
 
-        val primes = primes(n)
+        val cipher = readBigIntegers()
+        val alphabet = mutableSetOf<BigInteger>()
+        val pairOfLetters = mutableListOf<Array<BigInteger>>()
+        var primeLetter = gcd(cipher[0], cipher[1])
 
-        val cipher = readInts()
+        alphabet.add(cipher[0]/primeLetter)
+        alphabet.add(primeLetter)
+        pairOfLetters.add(arrayOf(cipher[0]/primeLetter, primeLetter))
 
-        val alphabet = mutableSetOf<Int>()
-        val pairOfIntLetters = mutableListOf<Array<Int>>()
-        cipher.forEach { c ->
-            val (f1, f2) = findFactors(c, primes)
-            alphabet.add(f1)
-            alphabet.add(f2)
-            pairOfIntLetters.add(arrayOf(f1, f2))
+        for(j in 1 until cipher.size) {
+            val anotherLetter = cipher[j] / primeLetter
+            alphabet.add(anotherLetter)
+            pairOfLetters.add(arrayOf(primeLetter, anotherLetter))
+            primeLetter = anotherLetter
         }
 
         val sortedAlphabet = alphabet.sorted()
-        val alphabetHashMap = hashMapOf<Int, Char>()
+        val alphabetHashMap = hashMapOf<BigInteger, Char>()
         val iterator = ('A'..'Z').iterator()
         for((index, letter) in iterator.withIndex()) {
             alphabetHashMap[sortedAlphabet[index]] = letter
         }
 
         print("Case #$i: ")
-        pairOfIntLetters.forEachIndexed { index, ints ->
+        pairOfLetters.forEachIndexed { index, ints ->
             val (p1, p2) = ints
 
-            if(index < pairOfIntLetters.size -1) {
-                if(pairOfIntLetters[index+1].contains(p2)) {
+            if(index < pairOfLetters.size -1) {
+                if(pairOfLetters[index+1].contains(p2)) {
                     print(alphabetHashMap[p1])
                 } else {
                     print(alphabetHashMap[p2])
                 }
             } else {
-                if(pairOfIntLetters[index-1].contains(p2)) {
+                if(pairOfLetters[index-1].contains(p2)) {
                     print(alphabetHashMap[p2])
                     print(alphabetHashMap[p1])
                 } else {
@@ -50,11 +55,21 @@ fun main(args: Array<String>) {
     }
 }
 
-fun primes(n: Int) = (2..n).filter { num -> (2 until num).none { num % it == 0 } }
+fun gcd(n1: BigInteger, n2: BigInteger): BigInteger {
+    var nro1 = n1
+    var nro2 = n2
+    while (nro1 != nro2) {
+        if (nro1 > nro2)
+            nro1 -= nro2
+        else
+            nro2 -= nro1
+    }
 
-fun findFactors(f: Int, primes: List<Int>) = primes.filter { n -> primes.any { it * n == f } }
+    return nro1
+}
 
 private fun readLn() = readLine()!!
 private fun readInt() = readLn().toInt()
 private fun readStrings() = readLn().split(" ")
 private fun readInts() = readStrings().map { it.toInt() }
+private fun readBigIntegers() = readStrings().map { it.toBigInteger() }
