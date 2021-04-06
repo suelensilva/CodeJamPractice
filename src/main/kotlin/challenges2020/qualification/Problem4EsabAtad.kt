@@ -1,4 +1,4 @@
-package challenges2020
+package challenges2020.qualification
 
 import java.util.*
 
@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 
         while (i <= firstHalfIndex) {
             val ask1 = i
-            val ask2 = nBits+1-i
+            val ask2 = nBits +1-i
 
             val pair1 = askNumber(ask1)
             normal[ask1-1] = pair1

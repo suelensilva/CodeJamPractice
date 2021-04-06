@@ -1,4 +1,4 @@
-package challenges2019
+package challenges2019.qualification
 
 fun main(args: Array<String>) {
     val nTests = readLine()!!.toInt()

@@ -1,4 +1,4 @@
-package challenges2020
+package challenges2020.qualification
 
 fun main(args: Array<String>) {
 

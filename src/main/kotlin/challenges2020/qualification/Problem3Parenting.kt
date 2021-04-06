@@ -1,4 +1,4 @@
-package challenges2020
+package challenges2020.qualification
 
 const val START = 0
 const val END = 1

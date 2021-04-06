@@ -1,4 +1,4 @@
-package challenges2019
+package challenges2019.qualification
 
 import java.math.BigDecimal
 
